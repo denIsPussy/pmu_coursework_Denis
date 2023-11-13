@@ -1,56 +1,62 @@
-package com.example.watchlinkapp.Movie.ComposeUI
+package com.example.watchlinkapp.Entities.ComposeUI
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.watchlinkapp.Movie.Model.Movie
-import com.example.watchlinkapp.Movie.Model.getMovies
-import com.example.watchlinkapp.R
+import com.example.watchlinkapp.Database.AppDatabase
+import com.example.watchlinkapp.Entities.Model.Genre
+import com.example.watchlinkapp.Entities.Model.MovieWithGenres
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieView(id: Int) {
-    val movie = getMovies().find { it.id == id }
+    val context = LocalContext.current
+    val (movieWithGenres, setMovieWithGenres) = remember { mutableStateOf<MovieWithGenres?>(null) }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            setMovieWithGenres(AppDatabase.getInstance(context).movieDao().getMovieWithGenres(id))
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(all = 10.dp)
     ) {
+        var movie = movieWithGenres?.movie
         movie?.let {
             LazyColumn(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 item {
+                    val decodedBitmap = BitmapFactory.decodeByteArray(movie.image, 0, movie.image!!.size)
+                    val imageBitmap = decodedBitmap.asImageBitmap()
                     Image(
-                        painter = painterResource(id = movie.imageResourceId),
-                        contentDescription = null, // Укажите соответствующее описание
+                        bitmap = imageBitmap,
+                        contentDescription = null,
                         modifier = Modifier
                             //.fillMaxHeight()
                             .width(200.dp)
@@ -74,7 +80,7 @@ fun MovieView(id: Int) {
                         )
                         OutlinedTextField(
                             readOnly = true,
-                            value = "${movie.genre}",
+                            value = genresToString(movieWithGenres?.genres!!),
                             onValueChange = { /*TODO*/ },
                             label = { Text("Genre", color = Color.LightGray) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -150,4 +156,11 @@ fun MovieView(id: Int) {
             }
         }
     }
+}
+fun genresToString(genres: List<Genre>): String{
+    var genresString: String = ""
+    genres.forEach { genre ->
+        genresString += "${genre.name}, "
+    }
+    return genresString.dropLast(2)
 }

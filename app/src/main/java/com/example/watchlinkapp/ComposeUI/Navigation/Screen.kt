@@ -27,7 +27,7 @@ enum class Screen (
         val bottomBarItems = listOf(
             MovieCatalog,
             Profile,
-            Search,
+            Search
         )
 
         fun getItem(route: String): Screen? {

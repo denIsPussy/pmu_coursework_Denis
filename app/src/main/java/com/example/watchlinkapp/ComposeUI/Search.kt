@@ -1,6 +1,7 @@
 package com.example.watchlinkapp.ComposeUI
 
 
+import android.graphics.BitmapFactory
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
@@ -37,27 +38,39 @@ import androidx.navigation.NavController
 import com.example.watchlinkapp.ComposeUI.Navigation.Screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.watchlinkapp.Movie.Model.Movie
-import com.example.watchlinkapp.Movie.Model.getMovies
+import com.example.watchlinkapp.Database.AppDatabase
+import com.example.watchlinkapp.Entities.Model.Movie
+import com.example.watchlinkapp.Entities.Model.MovieWithGenres
 import com.example.watchlinkapp.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Search(navController: NavController) {
-    var movies by remember { mutableStateOf(getMovies()) }
-    var filtredMovies by remember { mutableStateOf(getMovies().shuffled().take(10)) }
+    val context = LocalContext.current
+    val (movies, setMovies) = remember { mutableStateOf(emptyList<Movie>()) }
+    var filtredMovies by remember { mutableStateOf(movies) }
     var searchText by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            val data = AppDatabase.getInstance(context).movieDao().getAll()
+            setMovies(data)
+            filtredMovies = data
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         SearchBar(
@@ -67,7 +80,7 @@ fun Search(navController: NavController) {
             onSearchDisplayChanged = { text ->
                 searchText = text
             },
-            onSearchDisplayClosed = { filtredMovies = getMovies() },
+            onSearchDisplayClosed = { filtredMovies = movies },
             modifier = Modifier.fillMaxWidth(),
             tint = Color.White
         )
@@ -97,7 +110,7 @@ fun Search(navController: NavController) {
                     ) {
                         movieChunk.forEach { movie ->
                             val movieId =
-                                Screen.MovieView.route.replace("{id}", movie.id.toString())
+                                Screen.MovieView.route.replace("{id}", movie.movieId.toString())
                             Card(
                                 modifier = Modifier
                                     .padding(
@@ -110,11 +123,13 @@ fun Search(navController: NavController) {
                                     .clickable { navController.navigate(movieId) },
                                 shape = RoundedCornerShape(5.dp)
                             ) {
+                                val decodedBitmap = BitmapFactory.decodeByteArray(movie.image, 0, movie.image!!.size)
+                                val imageBitmap = decodedBitmap.asImageBitmap()
                                 Image(
-                                    painter = painterResource(id = movie.imageResourceId),
+                                    bitmap = imageBitmap,
                                     contentDescription = "image",
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxWidth()
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier.wrapContentWidth().wrapContentHeight()
                                 )
                             }
                         }
