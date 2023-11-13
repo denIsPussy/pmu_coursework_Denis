@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UserDAO {
     @Query("select * from users")
-    fun getAll(): Flow<List<User>>
+    fun getAll(): List<User>
 
     @Query("select * from users where user_name = :userName")
     fun getUser(userName: String): User

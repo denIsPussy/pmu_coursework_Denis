@@ -56,6 +56,7 @@ kotlin {
 }
 
 dependencies {
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation ("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.core:core-ktx:1.12.0")

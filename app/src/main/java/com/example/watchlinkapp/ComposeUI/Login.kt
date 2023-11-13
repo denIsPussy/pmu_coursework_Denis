@@ -40,10 +40,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.watchlinkapp.ComposeUI.Navigation.Screen
 import com.example.watchlinkapp.Database.AppDatabase
+import com.example.watchlinkapp.Entities.Model.AuthModel
 import com.example.watchlinkapp.Entities.Model.GenresWithMovies
 import com.example.watchlinkapp.Entities.Model.MovieWithGenres
 import com.example.watchlinkapp.Entities.Model.User
@@ -54,55 +56,50 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.wait
 
 @Composable
 fun Login(navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val users = remember { mutableStateListOf<User>() }
-    var (flag, setFlag) = remember { mutableStateOf(false)}
-    val (user, setUser) = remember { mutableStateOf<User?>(null) }
+    val authModel: AuthModel = viewModel()
     val database = remember { AppDatabase.getInstance(context) }
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            AppDatabase.getInstance(context).userDao().getAll().collect { data ->
-                users.clear()
-                users.addAll(data)
-            }
-            //setUser(AppDatabase.getInstance(context).userDao().getUser(1))
-        }
-    }
+//    LaunchedEffect(Unit) {
+//        withContext(Dispatchers.IO) {
+////            AppDatabase.getInstance(context).userDao().getAll().collect { data ->
+////                users.clear()
+////                users.addAll(data)
+////            }
+//            //setUser(AppDatabase.getInstance(context).userDao().getUser(1))
+//        }
+//    }
 
-    fun startCatalog(){
+    fun onAuthenticationSuccess(user: User){
+        authModel.setAuthenticatedUser(user)
         navController.navigate(Screen.MovieCatalog.route)
     }
 
     val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     fun login(){
-        var userr: User? = null
         coroutineScope.launch(Dispatchers.IO) {
-            val deferredUser =  database.userDao().getUser(username)
-            setUser(deferredUser)
+            val user = withContext(Dispatchers.IO) {
+                database.userDao().getUser(username)
+            }
+
             withContext(Dispatchers.Main) {
-                if (user != null && user.password.equals(password)) {
-                    startCatalog()
+                if (user != null && user.password == password) {
+                    onAuthenticationSuccess(user)
                 }
             }
         }
     }
-
-//    fun login(){
-//        val user =  database.userDao().getUser(username)
-//        if (user != null && user.password.equals(password)) {
-//            startCatalog()
-//        }
-//    }
 
     Column(
         modifier = Modifier
