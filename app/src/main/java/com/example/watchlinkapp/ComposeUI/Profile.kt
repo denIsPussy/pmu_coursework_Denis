@@ -49,12 +49,6 @@ fun Profile(){
     //val authModel: AuthModel = viewModel()
     val database = remember { AppDatabase.getInstance(context) }
 
-    fun ini(){
-        val currentUser = AuthModel.currentUser
-        if (currentUser != null) {
-            setUser(AppDatabase.getInstance(context).userDao().getUser(currentUser.userName))
-        }
-    }
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             val currentUser = AuthModel.currentUser
@@ -129,16 +123,6 @@ fun Profile(){
                         focusedContainerColor = colorResource(id = R.color.backgroundNavBarColor)
                     )
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    shape = RoundedCornerShape(5.dp),
-                    onClick = { /* Handle saving data */ },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.backgroundNavBarColor)
-                    )
-                ) {
-                    Text("Сохранить")
-                }
             }
         }
     }
