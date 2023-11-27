@@ -46,12 +46,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.watchlinkapp.ComposeUI.Login
-import com.example.watchlinkapp.ComposeUI.Profile
-import com.example.watchlinkapp.ComposeUI.Search
-import com.example.watchlinkapp.ComposeUI.Signup
-import com.example.watchlinkapp.Entities.ComposeUI.MovieCatalog
-import com.example.watchlinkapp.Entities.ComposeUI.MovieView
+import com.example.watchlinkapp.ComposeUI.User.Login
+import com.example.watchlinkapp.ComposeUI.User.Profile
+import com.example.watchlinkapp.ComposeUI.Movie.Search
+import com.example.watchlinkapp.ComposeUI.User.Signup
+import com.example.watchlinkapp.ComposeUI.Movie.MovieCatalog
+import com.example.watchlinkapp.ComposeUI.Movie.MovieView
 import com.example.watchlinkapp.R
 
 
@@ -183,7 +183,7 @@ fun Navhost(
             Screen.MovieView.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
-            backStackEntry.arguments?.let { MovieView(it.getInt("id")) }
+            backStackEntry.arguments?.let { MovieView() }
         }
     }
 }

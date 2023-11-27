@@ -1,27 +1,24 @@
 package com.example.watchlinkapp.Database
 
 import android.content.Context
-import androidx.compose.ui.platform.LocalContext
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.watchlinkapp.Entities.Converters
-import com.example.watchlinkapp.Entities.DAO.GenreDAO
-import com.example.watchlinkapp.Entities.DAO.MovieDAO
-import com.example.watchlinkapp.Entities.DAO.MovieWithGenresDAO
-import com.example.watchlinkapp.Entities.DAO.UserDAO
-import com.example.watchlinkapp.Entities.Model.Genre
-import com.example.watchlinkapp.Entities.Model.Movie
-import com.example.watchlinkapp.Entities.Model.MovieGenreCrossRef
-import com.example.watchlinkapp.Entities.Model.User
+import com.example.watchlinkapp.Entities.DAO.Genre.GenreDAO
+import com.example.watchlinkapp.Entities.DAO.Movie.MovieDAO
+import com.example.watchlinkapp.Entities.DAO.MovieGenre.MovieWithGenresDAO
+import com.example.watchlinkapp.Entities.DAO.User.UserDAO
+import com.example.watchlinkapp.Entities.Model.Genre.Genre
+import com.example.watchlinkapp.Entities.Model.Movie.Movie
+import com.example.watchlinkapp.Entities.Model.MovieGenre.MovieGenreCrossRef
+import com.example.watchlinkapp.Entities.Model.User.User
 import com.example.watchlinkapp.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.launch
-import java.util.Random
 
 @Database(entities = [Movie::class, Genre::class, MovieGenreCrossRef::class, User::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
