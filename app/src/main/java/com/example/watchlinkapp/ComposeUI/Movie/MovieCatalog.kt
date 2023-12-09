@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -15,6 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +26,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -35,53 +42,61 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.example.watchlinkapp.ComposeUI.AppViewModelProvider
 import com.example.watchlinkapp.ComposeUI.Navigation.Screen
 import com.example.watchlinkapp.Database.AppDatabase
 import com.example.watchlinkapp.Entities.Model.Genre.GenresWithMovies
 import com.example.watchlinkapp.R
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MovieCatalog(
     navController: NavController,
     viewModel: MovieCatalogViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    //val context = LocalContext.current
-    //val genresWithMovies = remember { mutableStateListOf<GenresWithMovies>() }
-//    LaunchedEffect(Unit) {
-//        withContext(Dispatchers.IO) {
-//            AppDatabase.getInstance(context).genreDao().getGenresWithMovies().collect { data ->
-//                genresWithMovies.clear()
-//                genresWithMovies.addAll(data)
-//            }
-//        }
-//    }
-//    try {
-//        val viewModel: MovieCatalogViewModel = viewModel(factory = AppViewModelProvider.Factory)
-//        // Далее продолжайте использовать viewModel
-//    } catch (e: Exception) {
-//        Log.e("MovieCatalog", "Ошибка инициализации ViewModel: ${e.message}")
-//    }
-    val genresListUiState by viewModel.movieListUiState.collectAsState()
+    val genresListUiState = viewModel.genreListUiState.collectAsLazyPagingItems()
+    val moviesListUiState = viewModel.movieListUiState.collectAsLazyPagingItems()
+
+    val refreshScope = rememberCoroutineScope()
+    var refreshingGenre by remember { mutableStateOf(false) }
+    fun refreshGenre() = refreshScope.launch {
+        refreshingGenre = true
+        genresListUiState.refresh()
+        refreshingGenre = false
+    }
+    val stateGenre = rememberPullRefreshState(refreshingGenre, ::refreshGenre)
+
+    var refreshingMovie by remember { mutableStateOf(false) }
+    fun refreshMovie() = refreshScope.launch {
+        refreshingMovie = true
+        moviesListUiState.refresh()
+        refreshingMovie = false
+    }
+    val stateMovie = rememberPullRefreshState(refreshingMovie, ::refreshMovie)
 
     LazyColumn(
-        modifier = Modifier
+        modifier = Modifier.pullRefresh(stateGenre)
             .background(colorResource(id = R.color.backgroundColor))
     ) {
         item {
             //BannerView()
         }
-        items(items = genresListUiState.movieList.filter { genresWithMovies -> genresWithMovies.movies.isNotEmpty() }, key = { it.genre.genreId!! }) { genreWithMovies ->
-            //this@LazyColumn.item {
-                Box(
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .width(180.dp)
-                ) {
+        items(count = genresListUiState.itemCount, key = genresListUiState.itemKey(), contentType = genresListUiState.itemContentType()) { index ->
+            val genre = genresListUiState[index]
+            Box(
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .width(180.dp)
+            ) {
+                genre?.let {
                     Text(
-                        text = genreWithMovies.genre.name,
+                        text = it.name,
                         color = Color.White,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Normal,
@@ -90,18 +105,18 @@ fun MovieCatalog(
                             .wrapContentWidth()
                     )
                 }
-            //}
-            //this@LazyColumn.item {
-                LazyRow(
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .fillMaxWidth()
-                ) {
-                    val moviesByGenre = genreWithMovies.movies
-                    items(items = moviesByGenre, key = { it.movieId!! }) { movie ->
-                    //moviesByGenre.forEach{ movie ->
-                        val movieId = Screen.MovieView.route.replace("{id}", movie.movieId.toString())
-                       // this@LazyRow.item {
+            }
+            LazyRow(
+                modifier = Modifier
+                    .pullRefresh(stateMovie)
+                    .padding(bottom = 8.dp)
+                    .fillMaxWidth()
+            ) {
+                items(count = moviesListUiState.itemCount, key = moviesListUiState.itemKey(), contentType = moviesListUiState.itemContentType()) { index1 ->
+                    val movie = moviesListUiState[index1]
+                    val movieId = Screen.MovieView.route.replace("{id}", movie?.movieId.toString())
+                    movie?.let {
+                        if (viewModel.containsMovieInGenre(movie.movieId!!, genre!!.genreId!!)){
                             Card(
                                 modifier = Modifier
                                     .padding(
@@ -119,20 +134,16 @@ fun MovieCatalog(
                                 Image(
                                     bitmap  = imageBitmap,
                                     contentDescription = "image",
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .wrapContentWidth().wrapContentHeight()
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+//                                        .wrapContentWidth().wrapContentHeight()
                                 )
                             }
-                        //}
-
+                        }
                     }
                 }
-            //}
+            }
         }
-//        genresListUiState.movieList.filter { genresWithMovies -> genresWithMovies.movies.isNotEmpty() }.forEach { genreWithMovies ->
-//
-//        }
     }
 }
 //@OptIn(ExperimentalFoundationApi::class)

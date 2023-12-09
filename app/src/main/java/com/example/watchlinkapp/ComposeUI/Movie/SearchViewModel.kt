@@ -16,17 +16,17 @@ import kotlinx.coroutines.flow.stateIn
 class SearchViewModel(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
-    val movieListUiState: StateFlow<MovieSearchListUiState> = movieRepository.getAll().map {
-        MovieSearchListUiState(it)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = AppDataContainer.TIMEOUT),
-        initialValue = MovieSearchListUiState()
-    )
-    fun getFilteredListMovies(searchString: String): List<Movie>{
-        var movies = movieListUiState.value.movieList
-        return movies.filter { movie -> movie.title.startsWith(searchString, ignoreCase = true) }
-    }
+//    val movieListUiState: StateFlow<MovieSearchListUiState> = movieRepository.getAll().map {
+//        MovieSearchListUiState(it)
+//    }.stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = AppDataContainer.TIMEOUT),
+//        initialValue = MovieSearchListUiState()
+//    )
+//    fun getFilteredListMovies(searchString: String): List<Movie>{
+//        var movies = movieListUiState.value.movieList
+//        return movies.filter { movie -> movie.title.startsWith(searchString, ignoreCase = true) }
+//    }
 }
 
 data class MovieSearchListUiState(val movieList: List<Movie> = listOf())

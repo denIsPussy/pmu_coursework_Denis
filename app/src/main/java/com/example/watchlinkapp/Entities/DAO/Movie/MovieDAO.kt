@@ -1,5 +1,6 @@
 package com.example.watchlinkapp.Entities.DAO.Movie
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -12,20 +13,19 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MovieDAO {
     @Query("select * from movies")
-    fun getAll(): Flow<List<Movie>>
-
-    @Query("select * from movies")
-    fun getMoviesWithGenres(): Flow<List<MovieWithGenres>>
+    fun getAll(): PagingSource<Int, Movie>
 
     @Query("select * from movies where movieId = :id")
-    fun getMovieWithGenres(id: Int): Flow<MovieWithGenres?>
+    fun getMovie(id: Int): Movie
 
     @Insert
-    suspend fun insert(movie: Movie)
+    suspend fun insert(vararg movie: Movie)
 
     @Update
     suspend fun update(movie: Movie)
 
     @Delete
     suspend fun delete(movie: Movie)
+    @Query("DELETE FROM movies")
+    suspend fun deleteAll()
 }

@@ -7,8 +7,8 @@ import androidx.room.Update
 import com.example.watchlinkapp.Entities.Model.User.User
 
 interface UserRepository {
-    fun getAll(): List<User>
-    fun getUser(userName: String): User
+    suspend fun getAll(): List<User>
+    suspend fun getUser(userName: String): User
     suspend fun insert(user: User)
     suspend fun update(user: User)
     suspend fun delete(user: User)

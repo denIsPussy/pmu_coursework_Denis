@@ -1,5 +1,7 @@
 package com.example.watchlinkapp.Entities.Repository.Movie
 
+import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
@@ -9,9 +11,8 @@ import com.example.watchlinkapp.Entities.Model.Movie.MovieWithGenres
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
-    fun getAll(): Flow<List<Movie>>
-    fun getMoviesWithGenres(): Flow<List<MovieWithGenres>>
-    fun getMovieWithGenres(id: Int): Flow<MovieWithGenres?>
+    fun getAll(): Flow<PagingData<Movie>>
+    suspend fun getMovie(id: Int): Movie
     suspend fun insert(movie: Movie)
     suspend fun update(movie: Movie)
     suspend fun delete(movie: Movie)

@@ -13,7 +13,7 @@ interface UserDAO {
     fun getAll(): List<User>
 
     @Query("select * from users where user_name = :userName")
-    fun getUser(userName: String): User
+    fun getUserByName(userName: String): User
 
     @Insert
     suspend fun insert(user: User)

@@ -6,6 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.watchlinkapp.Database.RemoteKeys.DAO.RemoteKeysDAO
+import com.example.watchlinkapp.Database.RemoteKeys.Model.RemoteKeys
 import com.example.watchlinkapp.Entities.Converters
 import com.example.watchlinkapp.Entities.DAO.Genre.GenreDAO
 import com.example.watchlinkapp.Entities.DAO.Movie.MovieDAO
@@ -20,13 +22,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [Movie::class, Genre::class, MovieGenreCrossRef::class, User::class], version = 5, exportSchema = false)
+@Database(entities = [Movie::class, Genre::class, MovieGenreCrossRef::class, User::class, RemoteKeys::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun movieDao(): MovieDAO
     abstract fun movieWithGenresDao(): MovieWithGenresDAO
     abstract fun genreDao(): GenreDAO
     abstract fun userDao(): UserDAO
+    abstract fun remoteKeysDAO(): RemoteKeysDAO
 
     companion object {
         private const val DB_NAME: String = "watchlink-db"
@@ -61,9 +64,7 @@ abstract class AppDatabase : RoomDatabase() {
                         4.5,
                         "Synopsis A",
                         "Director A",
-                        image1,
-                        "Phone A",
-                        "emailA@example.com"
+                        image1
                     ),
                     Movie(
                         2,
@@ -73,9 +74,7 @@ abstract class AppDatabase : RoomDatabase() {
                         4.2,
                         "Synopsis B",
                         "Director B",
-                        image2,
-                        "Phone B",
-                        "emailB@example.com"
+                        image2
                     ),
                     // Добавьте еще фильмы по аналогии
                 )
@@ -103,14 +102,14 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DB_NAME
                 )
-                    .addCallback(object : RoomDatabase.Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            CoroutineScope(Dispatchers.IO).launch {
-                                populateDatabase(appContext)
-                            }
-                        }
-                    })
+//                    .addCallback(object : RoomDatabase.Callback() {
+//                        override fun onCreate(db: SupportSQLiteDatabase) {
+//                            super.onCreate(db)
+//                            CoroutineScope(Dispatchers.IO).launch {
+//                                populateDatabase(appContext)
+//                            }
+//                        }
+//                    })
                     .build()
                     .also { INSTANCE = it }
             }

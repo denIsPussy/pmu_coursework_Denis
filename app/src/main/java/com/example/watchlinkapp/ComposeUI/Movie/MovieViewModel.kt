@@ -9,14 +9,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.watchlinkapp.Entities.Model.Genre.Genre
 import com.example.watchlinkapp.Entities.Model.Movie.Movie
 import com.example.watchlinkapp.Entities.Model.Movie.MovieWithGenres
+import com.example.watchlinkapp.Entities.Repository.Genre.GenreRepository
 import com.example.watchlinkapp.Entities.Repository.Movie.MovieRepository
+import com.example.watchlinkapp.Entities.Repository.MovieGenre.MovieGenreRepository
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MovieViewModel(
     savedStateHandle: SavedStateHandle,
-    private val movieRepository: MovieRepository
+    private val movieRepository: MovieRepository,
+    private val genresRepository: GenreRepository,
+    private val movieGenresRepository: MovieGenreRepository
 ) : ViewModel() {
 
     var movieUiState by mutableStateOf(MovieUiState())
@@ -27,15 +31,15 @@ class MovieViewModel(
     init {
         viewModelScope.launch {
             if (movieUid > 0) {
-                movieUiState = movieRepository.getMovieWithGenres(movieUid)
-                    .filterNotNull()
-                    .first()
-                    .toUiState()
+                val movie = movieRepository.getMovie(movieUid)
+                val genreIdList = movieGenresRepository.getAll().filter { it.movieId == movieUid }.map { it.genreId }
+                val genreList = genresRepository.getAllGenres().first().filter { it.genreId in genreIdList }
+                movieUiState = Pair(movie, genreList).toUiState()
             }
         }
     }
 }
-
+data class Person(val name: String, val age: Int, val profession: String)
 data class MovieUiState(
     val movieDetails: MovieDetails = MovieDetails()
 )
@@ -45,12 +49,12 @@ data class MovieDetails(
     val genres: List<Genre> = listOf()
 )
 
-fun MovieWithGenres.toDetails(): MovieDetails = MovieDetails(
-    movie = movie,
-    genres = genres
+fun Pair<Movie, List<Genre>>.toDetails(): MovieDetails = MovieDetails(
+    movie = this.first,
+    genres = this.second
 )
 
-fun MovieWithGenres.toUiState(): MovieUiState = MovieUiState(
+fun Pair<Movie, List<Genre>>.toUiState(): MovieUiState = MovieUiState(
     movieDetails = this.toDetails()
 )
 

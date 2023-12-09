@@ -22,9 +22,7 @@ data class Movie(
     @ColumnInfo(name = "director")
     val director: String,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB, name = "image")
-    val image: ByteArray? = null,
-    val phone: String,
-    val email: String
+    val image: ByteArray? = null
 ) {
 
     @Ignore
@@ -35,10 +33,8 @@ data class Movie(
         rating: Double,
         synopsis: String,
         director: String,
-        image: ByteArray,
-        phone: String,
-        email: String
-    ) : this(null, title, releaseYear, duration, rating, synopsis, director, image, phone, email)
+        image: ByteArray
+    ) : this(null, title, releaseYear, duration, rating, synopsis, director, image)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

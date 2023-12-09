@@ -5,12 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.watchlinkapp.ComposeUI.Movie.toUiState
 import com.example.watchlinkapp.Entities.Model.User.User
 import com.example.watchlinkapp.Entities.Repository.User.UserRepository
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UserViewModel(
     private val userRepository: UserRepository
@@ -19,10 +18,19 @@ class UserViewModel(
         var userUiState by mutableStateOf(UserUiState())
             private set
     }
-    fun getUser(userName: String) : User?{
-        var user: User? = null
-        user = userRepository.getUser(userName);
-        return user
+    fun login(userName: String, password: String, action: () -> Unit){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                userRepository.getAll()
+                val user = userRepository.getUser(userName)
+                if (user.password == password) {
+                    withContext(Dispatchers.Main){
+                        setAuthenticatedUser(user)
+                        action()
+                    }
+                }
+            }
+        }
     }
     suspend fun registrationUser(user: User){
         userRepository.insert(user);
@@ -30,11 +38,8 @@ class UserViewModel(
     fun getAuthenticatedUser() : User{
         return userUiState.userDetails.toUser()
     }
-    fun setAuthenticatedUser(user: User) : Boolean {
-//        var user = getUser(userName);
-//        if (user.password != password) return false
+    fun setAuthenticatedUser(user: User) {
         userUiState = user.toUiState()
-        return true
     }
 }
 data class UserUiState(

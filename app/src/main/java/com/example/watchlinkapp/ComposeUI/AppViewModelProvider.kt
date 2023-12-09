@@ -14,18 +14,20 @@ import com.example.watchlinkapp.MovieApplication
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            MovieCatalogViewModel(movieApplication().container.genreRepository)
+            MovieCatalogViewModel(movieApplication().container.genreRestRepository, movieApplication().container.movieRestRepository, movieApplication().container.movieRestGenreRepository)
         }
         initializer {
-            SearchViewModel(movieApplication().container.movieRepository)
+            SearchViewModel(movieApplication().container.movieRestRepository)
         }
         initializer {
-            UserViewModel(movieApplication().container.userRepository)
+            UserViewModel(movieApplication().container.userRestRepository)
         }
         initializer {
             MovieViewModel(
                 this.createSavedStateHandle(),
-                movieApplication().container.movieRepository
+                movieApplication().container.movieRestRepository,
+                movieApplication().container.genreRestRepository,
+                movieApplication().container.movieRestGenreRepository,
             )
         }
     }

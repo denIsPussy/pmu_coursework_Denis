@@ -1,5 +1,6 @@
 package com.example.watchlinkapp.ComposeUI.User
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,14 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.watchlinkapp.API.Repository.RestGenreRepository
 import com.example.watchlinkapp.ComposeUI.AppViewModelProvider
-import com.example.watchlinkapp.ComposeUI.Movie.MovieViewModel
 import com.example.watchlinkapp.ComposeUI.Navigation.Screen
-import com.example.watchlinkapp.Database.AppDatabase
-import com.example.watchlinkapp.Entities.Model.User.User
 import com.example.watchlinkapp.R
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -54,25 +52,24 @@ fun Login(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    fun onAuthenticationSuccess(){
-        navController.navigate(Screen.MovieCatalog.route)
-    }
-
     val coroutineScope = rememberCoroutineScope()
 
     fun login(){
         coroutineScope.launch() {
             withContext(Dispatchers.IO) {
-                val user = viewModel.getUser(username)
-                if (user != null) {
-                    viewModel.setAuthenticatedUser(user)
+                viewModel.login(username, password){
+                    navController.navigate(Screen.MovieCatalog.route)
                 }
-            }
-            withContext(Dispatchers.Main) {
-                onAuthenticationSuccess()
             }
         }
     }
+
+//    fun login(){
+//        viewModel.login(username, password){ isLogin ->
+//            isAuth = isLogin
+//        }
+//        navController.navigate(Screen.MovieCatalog.route)
+//    }
 
     Column(
         modifier = Modifier

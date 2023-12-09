@@ -4,9 +4,9 @@ import com.example.watchlinkapp.Entities.DAO.User.UserDAO
 import com.example.watchlinkapp.Entities.Model.User.User
 
 class OfflineUserRepository(private val userDAO: UserDAO) : UserRepository {
-    override fun getAll(): List<User> = userDAO.getAll()
+    override suspend fun getAll(): List<User> = userDAO.getAll()
 
-    override fun getUser(userName: String): User = userDAO.getUser(userName)
+    override suspend fun getUser(userName: String): User = userDAO.getUserByName(userName)
 
     override suspend fun insert(user: User) = userDAO.insert(user)
 
