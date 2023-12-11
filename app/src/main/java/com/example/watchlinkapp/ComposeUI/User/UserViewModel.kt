@@ -32,8 +32,10 @@ class UserViewModel(
             }
         }
     }
-    suspend fun registrationUser(user: User){
-        userRepository.insert(user);
+    fun registrationUser(user: User){
+        viewModelScope.launch {
+            userRepository.insert(user);
+        }
     }
     fun getAuthenticatedUser() : User{
         return userUiState.userDetails.toUser()

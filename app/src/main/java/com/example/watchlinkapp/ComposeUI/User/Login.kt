@@ -51,25 +51,42 @@ fun Login(
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var usernameError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
 
     val coroutineScope = rememberCoroutineScope()
 
+    fun validateInput(): Boolean {
+        var isValid = true
+
+        if (username.isBlank()) {
+            usernameError = "Введите имя пользователя"
+            isValid = false
+        } else {
+            usernameError = null
+        }
+
+        if (password.isBlank()) {
+            passwordError = "Введите пароль"
+            isValid = false
+        } else {
+            passwordError = null
+        }
+
+        return isValid
+    }
+
     fun login(){
-        coroutineScope.launch() {
-            withContext(Dispatchers.IO) {
-                viewModel.login(username, password){
-                    navController.navigate(Screen.MovieCatalog.route)
+        if (validateInput()) {
+            coroutineScope.launch() {
+                withContext(Dispatchers.IO) {
+                    viewModel.login(username, password) {
+                        navController.navigate(Screen.MovieCatalog.route)
+                    }
                 }
             }
         }
     }
-
-//    fun login(){
-//        viewModel.login(username, password){ isLogin ->
-//            isAuth = isLogin
-//        }
-//        navController.navigate(Screen.MovieCatalog.route)
-//    }
 
     Column(
         modifier = Modifier
@@ -96,6 +113,7 @@ fun Login(
                 value = username,
                 onValueChange = { username = it },
                 label = { Text("Имя пользователя") },
+                isError = usernameError != null,
                 colors = TextFieldDefaults.colors(
                     unfocusedLabelColor = Color.LightGray,
                     focusedLabelColor = Color.LightGray,
@@ -105,11 +123,15 @@ fun Login(
                     focusedContainerColor = colorResource(id = R.color.backgroundNavBarColor)
                 )
             )
+            if (usernameError != null) {
+                Text(text = usernameError!!, color = Color.Red)
+            }
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Пароль") },
+                isError = passwordError != null,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 colors = TextFieldDefaults.colors(
@@ -121,6 +143,9 @@ fun Login(
                     focusedContainerColor = colorResource(id = R.color.backgroundNavBarColor)
                 )
             )
+            if (passwordError != null) {
+                Text(text = passwordError!!, color = Color.Red)
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Button(shape = RoundedCornerShape(5.dp),
                 onClick = {

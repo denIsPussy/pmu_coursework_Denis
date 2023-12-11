@@ -47,7 +47,11 @@ class RestUserRepository(
     }
 
     override suspend fun insert(user: User) {
-        service.createUser(user.toUserRemote())
+        withContext(Dispatchers.IO){
+            dbUserRepository.insert(user)
+            val insertedUser: User = dbUserRepository.getUser(user.userName)
+            service.createUser(insertedUser.toUserRemote())
+        }
     }
 
     override suspend fun update(user: User) {

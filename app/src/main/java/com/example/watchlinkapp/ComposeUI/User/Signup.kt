@@ -54,19 +54,59 @@ fun Signup(
     var password by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
+
+    var usernameError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+    var phoneNumberError by remember { mutableStateOf<String?>(null) }
+    var dateOfBirthError by remember { mutableStateOf<String?>(null) }
+
     val coroutineScope = rememberCoroutineScope()
 
-     fun registration(){
-        //val hashPassword = User.hashPassword(password)
-        val user = User(userName = username, dateOfBirth = dateOfBirth, phoneNumber = phoneNumber, password = password)
-         coroutineScope.launch() {
-             withContext(Dispatchers.IO) {
-                 viewModel.registrationUser(user);
-             }
-             withContext(Dispatchers.Main) {
-                 navController.navigate(Screen.Login.route)
-             }
-         }
+    fun validateInput(): Boolean {
+        var isValid = true
+
+        if (username.isBlank()) {
+            usernameError = "Введите имя пользователя"
+            isValid = false
+        } else {
+            usernameError = null
+        }
+
+        if (password.isBlank()) {
+            passwordError = "Введите пароль"
+            isValid = false
+        } else {
+            passwordError = null
+        }
+
+        if (phoneNumber.isBlank()) {
+            phoneNumberError = "Введите номер телефона"
+            isValid = false
+        } else {
+            phoneNumberError = null
+        }
+
+        if (dateOfBirth.isBlank()) {
+            dateOfBirthError = "Введите дату рождения"
+            isValid = false
+        } else {
+            dateOfBirthError = null
+        }
+
+        return isValid
+    }
+    fun registration(){
+        if (validateInput()) {
+            val user = User(userName = username, dateOfBirth = dateOfBirth, phoneNumber = phoneNumber, password = password)
+            coroutineScope.launch() {
+                withContext(Dispatchers.IO) {
+                    viewModel.registrationUser(user);
+                }
+                withContext(Dispatchers.Main) {
+                    navController.navigate(Screen.Login.route)
+                }
+            }
+        }
     }
 
     Column(
@@ -94,6 +134,7 @@ fun Signup(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
                 label = { Text("Номер телефона") },
+                isError = phoneNumberError != null,
                 colors = TextFieldDefaults.colors(
                     unfocusedLabelColor = Color.LightGray,
                     focusedLabelColor = Color.LightGray,
@@ -103,11 +144,15 @@ fun Signup(
                     focusedContainerColor = colorResource(id = R.color.backgroundNavBarColor)
                 )
             )
+            if (phoneNumberError != null) {
+                Text(text = phoneNumberError!!, color = Color.Red)
+            }
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = username,
                 onValueChange = { username = it },
                 label = { Text("Имя пользователя") },
+                isError = usernameError != null,
                 colors = TextFieldDefaults.colors(
                     unfocusedLabelColor = Color.LightGray,
                     focusedLabelColor = Color.LightGray,
@@ -117,11 +162,15 @@ fun Signup(
                     focusedContainerColor = colorResource(id = R.color.backgroundNavBarColor)
                 )
             )
+            if (usernameError != null) {
+                Text(text = usernameError!!, color = Color.Red)
+            }
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Пароль") },
+                isError = passwordError != null,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 colors = TextFieldDefaults.colors(
@@ -133,10 +182,14 @@ fun Signup(
                     focusedContainerColor = colorResource(id = R.color.backgroundNavBarColor)
                 )
             )
+            if (passwordError != null) {
+                Text(text = passwordError!!, color = Color.Red)
+            }
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = dateOfBirth,
                 onValueChange = { dateOfBirth = it },
+                isError = dateOfBirthError != null,
                 label = { Text("Дата рождения") },
                 colors = TextFieldDefaults.colors(
                     unfocusedLabelColor = Color.LightGray,
@@ -147,6 +200,9 @@ fun Signup(
                     focusedContainerColor = colorResource(id = R.color.backgroundNavBarColor)
                 )
             )
+            if (dateOfBirthError != null) {
+                Text(text = dateOfBirthError!!, color = Color.Red)
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Button(shape = RoundedCornerShape(5.dp), onClick = { registration() },
                 colors = ButtonDefaults.buttonColors(
