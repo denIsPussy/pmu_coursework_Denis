@@ -6,6 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.watchlinkapp.API.Mediator.MovieRemoteMediator
+import com.example.watchlinkapp.API.Model.ReleaseYearRemote
 import com.example.watchlinkapp.API.Model.toMovie
 import com.example.watchlinkapp.API.Model.toMovieRemote
 import com.example.watchlinkapp.API.MyServerService
@@ -19,6 +20,7 @@ import com.example.watchlinkapp.Entities.Repository.Movie.MovieRepository
 import com.example.watchlinkapp.Entities.Repository.Movie.OfflineMovieRepository
 import com.example.watchlinkapp.Entities.Repository.MovieGenre.OfflineMovieGenreRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class RestMovieRepository(
     private val service: MyServerService,
@@ -53,6 +55,14 @@ class RestMovieRepository(
 
     override suspend fun getMovie(id: Int): Movie {
         return service.getMovie(id)[0].toMovie()
+    }
+
+    override suspend fun getMoviesByDate(startDate: String, endDate: String): Flow<List<Movie>> {
+        return flowOf(service.getMoviesByDate(startDate, endDate).map { it.toMovie() })
+    }
+
+    override suspend fun getReleaseYears(): Flow<ReleaseYearRemote> {
+        return flowOf(service.getReleaseYears())
     }
 
     override suspend fun insert(movie: Movie) {

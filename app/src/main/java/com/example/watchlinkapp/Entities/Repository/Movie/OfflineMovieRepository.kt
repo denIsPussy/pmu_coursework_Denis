@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
+import com.example.watchlinkapp.API.Model.ReleaseYearRemote
 import com.example.watchlinkapp.Database.AppContainer
 import com.example.watchlinkapp.Entities.DAO.Genre.GenreDAO
 import com.example.watchlinkapp.Entities.DAO.Movie.MovieDAO
@@ -21,6 +22,13 @@ class OfflineMovieRepository(private val movieDAO: MovieDAO) : MovieRepository {
     ).flow
 
     override suspend fun getMovie(id: Int): Movie = movieDAO.getMovie(id)
+    override suspend fun getMoviesByDate(startDate: String, endDate: String): Flow<List<Movie>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getReleaseYears(): Flow<ReleaseYearRemote> {
+        TODO("Not yet implemented")
+    }
 
     override suspend fun insert(movie: Movie) = movieDAO.insert(movie)
 

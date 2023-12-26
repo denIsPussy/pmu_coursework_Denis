@@ -46,10 +46,7 @@ fun Profile(viewModel: UserViewModel = viewModel(factory = AppViewModelProvider.
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            val currentUser = viewModel.getAuthenticatedUser()
-            if (currentUser != null) {
-                setUser(currentUser)
-            }
+            setUser(viewModel.getAuthenticatedUser())
         }
     }
 

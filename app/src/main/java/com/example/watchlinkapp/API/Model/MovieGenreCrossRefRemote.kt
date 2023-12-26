@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MovieGenreCrossRefRemote(
+    val id: Int? = null,
     val movieId: Int = 0,
     val genreId: Int = 0,
 )
@@ -15,6 +16,7 @@ fun MovieGenreCrossRefRemote.MovieGenreCrossRef(): MovieGenreCrossRef = MovieGen
 )
 
 fun MovieGenreCrossRef.MovieGenreCrossRefRemote(): MovieGenreCrossRefRemote = MovieGenreCrossRefRemote(
+    null,
     movieId,
     genreId
 )

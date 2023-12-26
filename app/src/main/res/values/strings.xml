@@ -13,4 +13,6 @@
     <string name="search_title">Поиск</string>
     <string name="signup_title">Регистрация</string>
     <string name="login_title">Вход</string>
+    <string name="filter_title">Фильтрация</string>
+    <string name="report_title">Отчет</string>
 </resources>

@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GenreRemote(
-    val genreId: Int? = 0,
+    val id: Int? = 0,
     val name: String = ""
 )
 
 fun GenreRemote.toGenre(): Genre = Genre(
-    genreId,
+    id,
     name
 )
 

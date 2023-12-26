@@ -59,7 +59,7 @@ fun MovieView(viewModel: MovieViewModel = viewModel(factory = AppViewModelProvid
                     )
                 }
                 item {
-                    Column(modifier = Modifier.padding(start = 16.dp)) {
+                    Column(modifier = Modifier.padding(start = 8.dp, end = 8.dp).fillMaxWidth()) {
                         OutlinedTextField(
                             readOnly = true,
                             value = movie.title,
@@ -67,10 +67,11 @@ fun MovieView(viewModel: MovieViewModel = viewModel(factory = AppViewModelProvid
                             label = { Text("Title", color = Color.LightGray) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 unfocusedTextColor = Color.LightGray,
+                                focusedTextColor = Color.LightGray,
                                 focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
                                 unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
                             ),
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
                         )
                         OutlinedTextField(
                             readOnly = true,
@@ -79,10 +80,11 @@ fun MovieView(viewModel: MovieViewModel = viewModel(factory = AppViewModelProvid
                             label = { Text("Genre", color = Color.LightGray) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 unfocusedTextColor = Color.LightGray,
+                                focusedTextColor = Color.LightGray,
                                 focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
                                 unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
                             ),
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
                         )
                         OutlinedTextField(
                             readOnly = true,
@@ -91,10 +93,11 @@ fun MovieView(viewModel: MovieViewModel = viewModel(factory = AppViewModelProvid
                             label = { Text("Release Year", color = Color.LightGray) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 unfocusedTextColor = Color.LightGray,
+                                focusedTextColor = Color.LightGray,
                                 focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
                                 unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
                             ),
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
                         )
                         OutlinedTextField(
                             readOnly = true,
@@ -103,10 +106,11 @@ fun MovieView(viewModel: MovieViewModel = viewModel(factory = AppViewModelProvid
                             label = { Text("Duration", color = Color.LightGray) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 unfocusedTextColor = Color.LightGray,
+                                focusedTextColor = Color.LightGray,
                                 focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
                                 unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
                             ),
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
                         )
                         OutlinedTextField(
                             readOnly = true,
@@ -115,46 +119,41 @@ fun MovieView(viewModel: MovieViewModel = viewModel(factory = AppViewModelProvid
                             label = { Text("Rating", color = Color.LightGray) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 unfocusedTextColor = Color.LightGray,
+                                focusedTextColor = Color.LightGray,
                                 focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
                                 unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
                             ),
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            readOnly = true,
+                            value = movie.synopsis,
+                            onValueChange = { /*TODO*/ },
+                            label = { Text("Synopsis", color = Color.LightGray) },
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                unfocusedTextColor = Color.LightGray,
+                                focusedTextColor = Color.LightGray,
+                                focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
+                                unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
+                            ),
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            readOnly = true,
+                            value = "${movie.director}",
+                            onValueChange = { /*TODO*/ },
+                            label = { Text("Director", color = Color.LightGray) },
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                unfocusedTextColor = Color.LightGray,
+                                focusedTextColor = Color.LightGray,
+                                focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
+                                unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
+                            ),
+                            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
                         )
                     }
-                    Divider(Modifier.padding(vertical = 16.dp))
-                    OutlinedTextField(
-                        readOnly = true,
-                        value = movie.synopsis,
-                        onValueChange = { /*TODO*/ },
-                        label = { Text("Synopsis", color = Color.LightGray) },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            unfocusedTextColor = Color.LightGray,
-                            focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
-                            unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
-                        ),
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    OutlinedTextField(
-                        readOnly = true,
-                        value = "${movie.director}",
-                        onValueChange = { /*TODO*/ },
-                        label = { Text("Director", color = Color.LightGray) },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            unfocusedTextColor = Color.LightGray,
-                            focusedBorderColor = Color.Gray, // Цвет рамки при фокусе
-                            unfocusedBorderColor = Color.Gray // Цвет рамки при отсутствии фокуса
-                        ),
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
                 }
             }
         }
     }
-}
-fun genresToString(genres: List<Genre>): String{
-    var genresString: String = ""
-    genres.forEach { genre ->
-        genresString += "${genre.name}, "
-    }
-    return genresString.dropLast(2)
 }

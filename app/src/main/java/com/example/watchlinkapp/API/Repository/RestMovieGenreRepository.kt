@@ -1,6 +1,7 @@
 package com.example.watchlinkapp.API.Repository
 
 import android.util.Log
+import com.example.watchlinkapp.API.Model.MovieGenreCountRemote
 import com.example.watchlinkapp.API.Model.MovieGenreCrossRef
 import com.example.watchlinkapp.API.Model.MovieGenreCrossRefRemote
 import com.example.watchlinkapp.API.MyServerService
@@ -8,6 +9,8 @@ import com.example.watchlinkapp.Entities.Model.MovieGenre.MovieGenreCrossRef
 import com.example.watchlinkapp.Entities.Repository.MovieGenre.MovieGenreRepository
 import com.example.watchlinkapp.Entities.Repository.MovieGenre.OfflineMovieGenreRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 
 class RestMovieGenreRepository(
@@ -24,12 +27,9 @@ class RestMovieGenreRepository(
         val existMovieGenres = existMovieGenresList.toMutableList()
         val serverMovieGenres = service.getMoviesGenres().map { it.MovieGenreCrossRef() }
 
-
-        // Найти записи для удаления (те, что есть в БД, но отсутствуют на сервере)
         val toDelete = existMovieGenres.filterNot { serverMovieGenres.contains(it) }
         toDelete.forEach { dbMovieGenreRepository.delete(it) }
 
-        // Найти новые записи для добавления (те, что есть на сервере, но отсутствуют в БД)
         val toAdd = serverMovieGenres.filterNot { existMovieGenres.contains(it) }
         toAdd.forEach { dbMovieGenreRepository.insert(it) }
 
@@ -43,5 +43,8 @@ class RestMovieGenreRepository(
     }
     override suspend fun delete(movie: MovieGenreCrossRef) {
         service.deleteMovieGenre(movie.movieId)
+    }
+    override suspend fun getCountMoviesByGenre(): Flow<List<MovieGenreCountRemote>> {
+        return flowOf(service.getMovieCountByGenre())
     }
 }

@@ -32,9 +32,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -52,6 +54,8 @@ import com.example.watchlinkapp.ComposeUI.Movie.Search
 import com.example.watchlinkapp.ComposeUI.User.Signup
 import com.example.watchlinkapp.ComposeUI.Movie.MovieCatalog
 import com.example.watchlinkapp.ComposeUI.Movie.MovieView
+import com.example.watchlinkapp.ComposeUI.Movie.MoviesByDate
+import com.example.watchlinkapp.ComposeUI.Movie.Report
 import com.example.watchlinkapp.R
 
 
@@ -76,7 +80,9 @@ fun Topbar(
                         Image(
                             painter = painterResource(id = R.drawable.ivi),
                             contentDescription = "ivi",
-                            Modifier.padding(end = 14.dp).size(50.dp)
+                            Modifier
+                                .padding(end = 14.dp)
+                                .size(50.dp)
                         )
                     }
                 }
@@ -145,7 +151,7 @@ fun Navbar(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = screen.icon,
+                        imageVector = ImageVector.vectorResource(id = screen.icon!!),
                         contentDescription = null,
                         tint = contentColor
                     )
@@ -179,6 +185,8 @@ fun Navhost(
         composable(Screen.Signup.route) { Signup(navController) }
         composable(Screen.Login.route) { Login(navController) }
         composable(Screen.Search.route) { Search(navController) }
+        composable(Screen.Filter.route) { MoviesByDate(navController) }
+        composable(Screen.Report.route) { Report(navController) }
         composable(
             Screen.MovieView.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -205,7 +213,10 @@ fun MainNavbar() {
         },
         bottomBar = {
             if (currentScreen == null || (currentScreen.showInBottomBar && currentScreen.isAuthenticated)) {
-                Navbar(navController, currentDestination, Modifier.padding(all = 8.dp).background(colorResource(id = R.color.backgroundColor)))
+                Navbar(navController, currentDestination,
+                    Modifier
+                        .padding(all = 8.dp)
+                        .background(colorResource(id = R.color.backgroundColor)))
             }
         },
         containerColor = colorResource(id = R.color.backgroundColor)

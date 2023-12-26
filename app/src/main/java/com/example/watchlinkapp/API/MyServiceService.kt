@@ -1,7 +1,9 @@
 package com.example.watchlinkapp.API
 import com.example.watchlinkapp.API.Model.GenreRemote
+import com.example.watchlinkapp.API.Model.MovieGenreCountRemote
 import com.example.watchlinkapp.API.Model.MovieGenreCrossRefRemote
 import com.example.watchlinkapp.API.Model.MovieRemote
+import com.example.watchlinkapp.API.Model.ReleaseYearRemote
 import com.example.watchlinkapp.API.Model.UserRemote
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -47,6 +49,18 @@ interface MyServerService {
         @Query("_page") page: Int,
         @Query("_limit") limit: Int,
     ): List<MovieRemote>
+
+    @GET("moviesByDate")
+    suspend fun getMoviesByDate(
+        @Query("start") startDate: String,
+        @Query("end") endDate: String
+    ): List<MovieRemote>
+
+    @GET("moviesByGenreCount")
+    suspend fun getMovieCountByGenre(): List<MovieGenreCountRemote>
+
+    @GET("allReleaseYears")
+    suspend fun getReleaseYears(): ReleaseYearRemote
 
     @GET("movies")
     suspend fun getMovie(

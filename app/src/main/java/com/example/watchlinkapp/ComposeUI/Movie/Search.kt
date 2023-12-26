@@ -193,14 +193,7 @@ fun MovieItem(
     val movieId = Screen.MovieView.route.replace("{id}", movie.movieId.toString())
     Card(
         modifier = Modifier
-//            .padding(
-//                start = 6.dp,
-//                end = 6.dp,
-//                top = 5.dp,
-//                bottom = 5.dp
-//            )
             .width(110.dp)
-            //.height(110.dp)
             .fillMaxWidth()
             .clickable { navController.navigate(movieId) },
         shape = RoundedCornerShape(5.dp)
@@ -212,20 +205,6 @@ fun MovieItem(
             contentDescription = "image",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
-//                .wrapContentWidth()
-//                .wrapContentHeight()
         )
     }
 }
-//@Preview(name = "Light Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-//@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-//@Composable
-//fun StudentEmptyListPreview(movie: Movie, navController : NavController) {
-//    WatchLinkAppTheme {
-//        Surface(
-//            color = MaterialTheme.colorScheme.background
-//        ) {
-//            MovieItem(movie = movie, navController = navController)
-//        }
-//    }
-//}
